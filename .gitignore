@@ -1,0 +1,35 @@
+
+# Ignore build files
+/build/
+
+# Ignore NetBeans project files
+/nbproject/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled files (Java specific)
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignore temporary or backup files
+*.log
+*.bak
+*.swp
+*.tmp
+
+# Ignore IDE-specific files (NetBeans or other IDEs)
+.idea/
+.vscode/
+
+# Ignore any generated files
+*.log
+*.out
+*.pid
+
+# Ignore the target/ or dist/ directories if they exist
+/target/
+/dist/
