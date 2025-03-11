@@ -47,6 +47,9 @@ public class VehicleController extends HttpServlet {
             case "/":
                 vehicleService.getAllVehicles(response);
                 break;
+            case "/available":
+                vehicleService.getAvailableVehicles(response);
+                break;
             default:
                 JSONResponseUtils.sendJsonResponse(response, "Invalid request", 400, null);
         }
