@@ -50,6 +50,7 @@ public class VehicleServiceImpl implements VehicleService{
                 List<Vehicle> vehicles = vehicleDAO.getVehicles();
                 if(vehicles == null || vehicles.isEmpty()) {
                     JSONResponseUtils.sendJsonResponse(response, "No vehicles found", 404, null);  
+                    return null;
                 }
                 JSONResponseUtils.sendJsonResponse(response, "Vehicles retrieved successfully", 200, vehicles);
 
