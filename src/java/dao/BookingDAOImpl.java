@@ -61,84 +61,82 @@ public class BookingDAOImpl implements BookingDAO {
     @Override
     public List<Booking> getBookings() {
         String sql = "SELECT " +
-             "b.Id AS BookingID, " +
-             "b.DriverId AS DriverId, " +
-             "c.Name AS CustomerName, " +
-             "c.PhoneNumber AS CustomerPhone, " +
-             "c.NIC AS CustomerNIC, " +
-             "b.PickUpLocation, " +
-             "b.DropOfLocation, " +
-             "b.RideFare, " +
-             "b.PaymentStatus, " +
-             "b.BookingStatus, " +
-             "u.Name AS DriverName, " +
-             "u.Email AS DriverEmail, " +
-             "v.Id AS VehicleId, " +
-             "v.Name AS VehicleName, " +
-             "v.Model AS VehicleModel, " +
-             "v.NumberPlate AS VehicleNumberPlate, " +
-             "v.VehicleStatus " +
-             "FROM bookings b " +
-             "JOIN customers c ON b.CustomerId = c.Id " +
-             "JOIN drivers d ON b.DriverId = d.Id " +
-             "JOIN users u ON d.UserId = u.Id " +
-             "JOIN vehicles v ON b.VehicleId = v.Id;";
-
+            "b.Id AS BookingID, " +
+            "b.DriverId AS DriverId, " +
+            "c.Name AS CustomerName, " +
+            "c.PhoneNumber AS CustomerPhone, " +
+            "c.NIC AS CustomerNIC, " +
+            "b.PickUpLocation, " +
+            "b.DropOfLocation, " +
+            "b.RideFare, " +
+            "b.PaymentStatus, " +
+            "b.BookingStatus, " +
+            "u.Name AS DriverName, " +
+            "u.Email AS DriverEmail, " +
+            "v.Id AS VehicleId, " +
+            "v.Name AS VehicleName, " +
+            "v.Model AS VehicleModel, " +
+            "v.NumberPlate AS VehicleNumberPlate, " +
+            "v.VehicleStatus " +
+            "FROM bookings b " +
+            "JOIN customers c ON b.CustomerId = c.Id " +
+            "JOIN users u ON b.DriverId = u.Id " + 
+            "JOIN vehicles v ON b.VehicleId = v.Id;";
 
         List<Booking> bookings = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+            try {
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
 
-                while (rs.next()) {
+                    while (rs.next()) {
+                        Booking booking = new Booking();
+                        booking.setId(rs.getInt("BookingID"));
+                        booking.setDriverId(rs.getInt("DriverId"));
+                        booking.setPickUpLocation(rs.getString("PickUpLocation"));
+                        booking.setDropOfLocation(rs.getString("DropOfLocation"));
+                        booking.setRideFare(rs.getDouble("RideFare"));
+                        booking.setPaymentStatus(PaymentStatus.valueOf(rs.getString("PaymentStatus")));
+                        booking.setBookingStatus(BookingStatus.valueOf(rs.getString("BookingStatus")));
 
-                    Booking booking = new Booking();
-                    booking.setId(rs.getInt("BookingID"));
-                    booking.setDriverId(rs.getInt("DriverId"));
-                    booking.setPickUpLocation(rs.getString("PickUpLocation"));
-                    booking.setDropOfLocation(rs.getString("DropOfLocation"));
-                    booking.setRideFare(rs.getDouble("RideFare"));
-                    booking.setPaymentStatus(PaymentStatus.valueOf(rs.getString("PaymentStatus")));
-                    booking.setBookingStatus(BookingStatus.valueOf(rs.getString("BookingStatus")));
+                        Customer customer = new Customer(rs.getString("CustomerName"), rs.getLong("CustomerPhone"), rs.getLong("CustomerNIC"));
+                        booking.setCustomer(customer);
 
-                    Customer customer = new Customer(rs.getString("CustomerName"), rs.getLong("CustomerPhone"), rs.getLong("CustomerNIC"));
-                    booking.setCustomer(customer);
+                        Driver driver = new Driver();
+                        driver.setName(rs.getString("DriverName"));
+                        driver.setEmail(rs.getString("DriverEmail"));
+                        booking.setDriver(driver);  
 
-                    Driver driver = new Driver();
-                    driver.setName(rs.getString("DriverName"));
-                    driver.setEmail(rs.getString("DriverEmail"));
-                    booking.setDriver(driver);  
+                        Vehicle vehicle = new Vehicle();
+                        vehicle.setId(rs.getInt("VehicleId"));
+                        vehicle.setName(rs.getString("VehicleName"));
+                        vehicle.setModel(rs.getString("VehicleModel"));
+                        vehicle.setNumberPlate(rs.getString("VehicleNumberPlate"));
+                        vehicle.setVehicleStatus(VehicleStatus.valueOf(rs.getString("VehicleStatus")));
+                        booking.setVehicle(vehicle);
 
-                    Vehicle vehicle = new Vehicle();
-                    vehicle.setId(rs.getInt("VehicleId"));
-                    vehicle.setName(rs.getString("VehicleName"));
-                    vehicle.setModel(rs.getString("VehicleModel"));
-                    vehicle.setNumberPlate(rs.getString("VehicleNumberPlate"));
-                    vehicle.setVehicleStatus(VehicleStatus.valueOf(rs.getString("VehicleStatus")));
-                    booking.setVehicle(vehicle);
+                        bookings.add(booking);
+                    }
 
-                    bookings.add(booking);
 
-                }
-            
             } catch (SQLException e) {
                 e.printStackTrace();
                 System.out.println(e.getMessage());
             }
-            return bookings;
-        }
+
+        return bookings;
+    }
 
     @Override
     public Booking getBookingInfo(int bookingId) {
-       String sql = "SELECT b.Id AS BookingID, b.PickUpLocation, b.DropOfLocation, b.RideFare, " +
-             "b.PaymentStatus, b.BookingStatus, u.Name AS DriverName, u.Email AS DriverEmail, " +
-             "v.Name AS VehicleName, v.Model AS VehicleModel, v.NumberPlate AS VehicleNumberPlate " +
-             "FROM bookings b " +
-             "JOIN drivers d ON b.DriverId = d.Id " +  
-             "JOIN users u ON d.UserId = u.Id " +
-             "JOIN vehicles v ON b.VehicleId = v.Id " +
-             "WHERE b.Id = ?";
+        String sql = "SELECT b.Id AS BookingID, b.PickUpLocation, b.DropOfLocation, b.RideFare, " +
+               "b.PaymentStatus, b.BookingStatus, u.Name AS DriverName, u.Email AS DriverEmail, " +
+               "v.Name AS VehicleName, v.Model AS VehicleModel, v.NumberPlate AS VehicleNumberPlate " +
+               "FROM bookings b " +
+               "JOIN users u ON b.DriverId = u.Id " +
+               "JOIN vehicles v ON b.VehicleId = v.Id " +
+               "WHERE b.Id = ?";
 
         Booking booking = null;
 
