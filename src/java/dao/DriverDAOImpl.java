@@ -117,55 +117,54 @@ public class DriverDAOImpl implements DriverDAO {
     }
 
     @Override
-public List<Booking> getAssignedBookings(int driverId) {
-   String sql = "SELECT b.Id AS BookingID, b.PickUpLocation, b.DropOfLocation, b.RideFare, " +
-             "b.BookingStatus, b.PaymentStatus, " +
-             "c.Name AS CustomerName, c.PhoneNumber AS CustomerPhone, " +
-             "v.Id AS VehicleId, v.Name AS VehicleName, v.Model AS VehicleModel, v.NumberPlate AS VehicleNumberPlate " +
-             "FROM bookings b " +
-             "JOIN customers c ON b.CustomerId = c.Id " +
-             "JOIN vehicles v ON b.VehicleId = v.Id " +
-             "JOIN drivers d ON b.DriverId = d.Id " +  
-             "WHERE d.UserId = ?";
+    public List<Booking> getAssignedBookings(int driverId) {
+       String sql = "SELECT b.Id AS BookingID, b.PickUpLocation, b.DropOfLocation, b.RideFare, " +
+                 "b.BookingStatus, b.PaymentStatus, " +
+                 "c.Name AS CustomerName, c.PhoneNumber AS CustomerPhone, " +
+                 "v.Id AS VehicleId, v.Name AS VehicleName, v.Model AS VehicleModel, v.NumberPlate AS VehicleNumberPlate " +
+                 "FROM bookings b " +
+                 "JOIN customers c ON b.CustomerId = c.Id " +
+                 "JOIN vehicles v ON b.VehicleId = v.Id " +
+                 "WHERE b.DriverId = ?";
 
 
-    List<Booking> bookings = new ArrayList<>();
+        List<Booking> bookings = new ArrayList<>();
 
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setInt(1, driverId);
+            stmt.setInt(1, driverId);
 
-        try (ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Booking booking = new Booking();
-                booking.setId(rs.getInt("BookingID"));
-                booking.setPickUpLocation(rs.getString("PickUpLocation"));
-                booking.setDropOfLocation(rs.getString("DropOfLocation"));
-                booking.setRideFare(rs.getDouble("RideFare"));
-                booking.setBookingStatus(BookingStatus.valueOf(rs.getString("BookingStatus")));
-                booking.setPaymentStatus(PaymentStatus.valueOf(rs.getString("PaymentStatus")));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Booking booking = new Booking();
+                    booking.setId(rs.getInt("BookingID"));
+                    booking.setPickUpLocation(rs.getString("PickUpLocation"));
+                    booking.setDropOfLocation(rs.getString("DropOfLocation"));
+                    booking.setRideFare(rs.getDouble("RideFare"));
+                    booking.setBookingStatus(BookingStatus.valueOf(rs.getString("BookingStatus")));
+                    booking.setPaymentStatus(PaymentStatus.valueOf(rs.getString("PaymentStatus")));
 
-                Customer customer = new Customer();
-                customer.setName(rs.getString("CustomerName"));
-                customer.setPhoneNumber((int) rs.getLong("CustomerPhone"));
-                booking.setCustomer(customer);
+                    Customer customer = new Customer();
+                    customer.setName(rs.getString("CustomerName"));
+                    customer.setPhoneNumber((int) rs.getLong("CustomerPhone"));
+                    booking.setCustomer(customer);
 
-                Vehicle vehicle = new Vehicle();
-                vehicle.setId(rs.getInt("VehicleId"));
-                vehicle.setName(rs.getString("VehicleName"));
-                vehicle.setModel(rs.getString("VehicleModel"));
-                vehicle.setNumberPlate(rs.getString("VehicleNumberPlate"));
-                booking.setVehicle(vehicle);
+                    Vehicle vehicle = new Vehicle();
+                    vehicle.setId(rs.getInt("VehicleId"));
+                    vehicle.setName(rs.getString("VehicleName"));
+                    vehicle.setModel(rs.getString("VehicleModel"));
+                    vehicle.setNumberPlate(rs.getString("VehicleNumberPlate"));
+                    booking.setVehicle(vehicle);
 
-                bookings.add(booking);
+                    bookings.add(booking);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return bookings;
     }
-    return bookings;
-}
 
      
 }

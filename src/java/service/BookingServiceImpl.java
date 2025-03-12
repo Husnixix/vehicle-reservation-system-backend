@@ -117,10 +117,10 @@ public class BookingServiceImpl implements BookingService {
         try {
             boolean accepted = bookingDAO.bookingAccepted(bookingId);
             if(accepted){
-                JSONResponseUtils.sendJsonResponse(response, "Booking Accepted", 404, null);  
+                JSONResponseUtils.sendJsonResponse(response, "Booking Accepted", 200, null);  
                 return;
             }
-            JSONResponseUtils.sendJsonResponse(response, "Bookings retrieved successfully", 200, null);
+            JSONResponseUtils.sendJsonResponse(response, "Failed to accept booking", 400, null);
         } catch (Exception e) {
             JSONResponseUtils.sendJsonResponse(response, "An error occurred while processing your request", 500, null);
         }
@@ -180,7 +180,7 @@ public class BookingServiceImpl implements BookingService {
 
             if (bookingStatusUpdated && driverStatusUpdated && vehicleStatusUpdated) {
                 conn.commit();
-                JSONResponseUtils.sendJsonResponse(response, "Booking Completed", 404, null); 
+                JSONResponseUtils.sendJsonResponse(response, "Booking Completed", 200, null); 
             } else {
                 conn.rollback();
                 JSONResponseUtils.sendJsonResponse(response, "An error occured on completing", 404, null); 
