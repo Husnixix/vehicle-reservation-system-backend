@@ -53,10 +53,7 @@ public class DriverController extends HttpServlet {
         String path = getPath(request);
 
         switch (path) {
-            case "/vehicles":
-                vehicleService.getAvailableVehicles(response);
-                break;
-            case "/driverinfo":
+            case "/available":
                 driverService.getAvailableDrivers(response);
                 break;
             case "/assignedbookings":
